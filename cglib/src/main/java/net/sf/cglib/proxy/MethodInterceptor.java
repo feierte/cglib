@@ -27,10 +27,10 @@ extends Callback
      * All generated proxied methods call this method instead of the original method.
      * The original method may either be invoked by normal reflection using the Method object,
      * or by using the MethodProxy (faster).
-     * @param obj "this", the enhanced object
-     * @param method intercepted Method
-     * @param args argument array; primitive types are wrapped
-     * @param proxy used to invoke super (non-intercepted method); may be called
+     * @param obj "this", the enhanced object 目标类的实例（被代理的对象）
+     * @param method intercepted Method 目标类方法的 反射对象
+     * @param args argument array; primitive types are wrapped 方法参数
+     * @param proxy used to invoke super (non-intercepted method); may be called 代理类的实例
      * as many times as needed
      * @throws Throwable any exception may be thrown; if so, super method will not be invoked
      * @return any value compatible with the signature of the proxied method. Method returning void will ignore this value.

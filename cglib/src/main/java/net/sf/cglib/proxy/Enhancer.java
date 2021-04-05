@@ -59,6 +59,8 @@ import org.objectweb.asm.Label;
  * <p>
  * For an almost drop-in replacement for
  * <code>java.lang.reflect.Proxy</code>, see the {@link Proxy} class.
+ * <p>
+ * CGLib采用动态创建子类的方式生成代理对象，所以不能对目标类中的final或private方法进行代理
  */
 public class Enhancer extends AbstractClassGenerator
 {
