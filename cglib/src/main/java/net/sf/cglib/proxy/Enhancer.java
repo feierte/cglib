@@ -162,7 +162,7 @@ public class Enhancer extends AbstractClassGenerator
     private Type[] callbackTypes;
     private boolean validateCallbackTypes;
     private boolean classOnly;
-    private Class superclass; // 代理对象需要继承的父类
+    private Class superclass; // 代理对象需要继承的父类（即委托类、需要创建子类的类）
     private Class[] argumentTypes;
     private Object[] arguments;
     private boolean useFactory = true;
@@ -317,9 +317,12 @@ public class Enhancer extends AbstractClassGenerator
      * callbacks (if any) to create a new object instance.
      * Uses the constructor of the superclass matching the <code>argumentTypes</code>
      * parameter, with the given arguments.
-     * @param argumentTypes constructor signature
-     * @param arguments compatible wrapped arguments to pass to constructor
+     * @param argumentTypes constructor signature 构造方法中参数类型
+     * @param arguments compatible wrapped arguments to pass to constructor 传给构造方法的值
      * @return a new instance
+     *
+     * @apiNote cglib可以不需要实现接口来实现动态代理，而是通过字节码生成类（抽象类或具体类）的一个子类来完成动态代理的。
+     * 那就有可能出现需要代理的对象不存在一个无参构造函数，当cglib需要通过一个有参函数创建子类时，就需要调用该方法。
      */
     public Object create(Class[] argumentTypes, Object[] arguments) {
         classOnly = false;
@@ -475,7 +478,8 @@ public class Enhancer extends AbstractClassGenerator
     }
 
     private Object createHelper() {
-        preValidate();
+        preValidate(); // 有效性验证，比如有多个Callback，却没有CallbackFilter
+        // 使用KeyFactory 以当前代理类的配置信息，生成一个组合key
         Object key = KEY_FACTORY.newInstance((superclass != null) ? superclass.getName() : null,
                 ReflectUtils.getNames(interfaces),
                 filter == ALL_ZERO ? null : new WeakCacheKey<CallbackFilter>(filter),
@@ -484,6 +488,7 @@ public class Enhancer extends AbstractClassGenerator
                 interceptDuringConstruction,
                 serialVersionUID);
         this.currentKey = key;
+        // 使用上面步骤创建的组合key，生成代理对象
         Object result = super.create(key);
         return result;
     }

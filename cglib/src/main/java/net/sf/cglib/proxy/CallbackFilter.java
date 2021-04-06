@@ -26,12 +26,21 @@ import java.lang.reflect.Method;
  * lightweight as cglib might keep {@link CallbackFilter} objects
  * alive to enable caching of generated classes. Prefer using {@code static}
  * classes for implementation of {@link CallbackFilter}.</p>
+ *
+ * @apiNote 在使用动态代理进行方法拦截时，可能会有这样的逻辑：需要判断调用的方法，然后决定是否拦截。
+ * 也就是同一个代理类在调用不同的方法时拦截的逻辑是不一样的。这就需要使用CallbackFilter来实现这一功能。
+ *
+ * <p>jdk动态代理是没有类似的功能的，对InvocationHandler接口方法的调用对代理类内的所有方法都有效。
  */
 public interface CallbackFilter {
     /**
      * Map a method to a callback.
      * @param method the intercepted method
-     * @return the index into the array of callbacks (as specified by {@link Enhancer#setCallbacks}) to use for the method, 
+     * @return the index into the array of callbacks (as specified by {@link Enhancer#setCallbacks}) to use for the method,
+     *
+     * @apiNote Enhancer#setCallbacks(Callback[])可以设置多个Callback回调方法，accept(Method)的返回值就对应Callback[]数组的下标。
+     * 例如，返回2，就对应Callback[]数组的第二个元素，即Callback[1]
+     * @see Enhancer#setCallbacks(Callback[])
      */
     int accept(Method method);
 
