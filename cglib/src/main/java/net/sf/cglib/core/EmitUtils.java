@@ -23,6 +23,9 @@ import net.sf.cglib.core.internal.CustomizerRegistry;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 
+/**
+ * 主要封装了一些操作bytecode的基本函数，比如生成一个null_constructor，添加类属性add_property等
+ */
 public class EmitUtils {
     private static final Signature CSTRUCT_NULL =
       TypeUtils.parseConstructor("");

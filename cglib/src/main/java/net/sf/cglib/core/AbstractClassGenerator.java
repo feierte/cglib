@@ -131,7 +131,7 @@ implements ClassGenerator
     }
 
     protected static class Source {
-        String name;
+        String name; // class generator的名称；如果使用Enhancer来生成增强类，name的值就为 net.sf.cglib.proxy. Enhancer
         public Source(String name) {
             this.name = name;
         }
@@ -273,6 +273,11 @@ implements ClassGenerator
     	return null;
     }
 
+    /**
+     * 模板方法
+     * @param key
+     * @return
+     */
     protected Object create(Object key) {
         try {
             ClassLoader loader = getClassLoader();

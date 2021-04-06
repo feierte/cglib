@@ -61,6 +61,11 @@ import org.objectweb.asm.Label;
  * <code>java.lang.reflect.Proxy</code>, see the {@link Proxy} class.
  * <p>
  * CGLib采用动态创建子类的方式生成代理对象，所以不能对目标类中的final或private方法进行代理
+ *
+ * <p>生成代理对象步骤，创建代理对象会经过三步：
+ *  1.生成代理类的二进制字节码文件。
+ *  2.加载二进制字节码文件到JVM，生成class对象。
+ *  3.反射获得实例构造方法，创建代理对象。
  */
 public class Enhancer extends AbstractClassGenerator
 {
@@ -151,13 +156,13 @@ public class Enhancer extends AbstractClassGenerator
                                   Long serialVersionUID);
     }
 
-    private Class[] interfaces;
+    private Class[] interfaces; // 代理对象需要实现的接口
     private CallbackFilter filter;
-    private Callback[] callbacks;
+    private Callback[] callbacks; // 对目标类拦截时，需要执行的回调接口
     private Type[] callbackTypes;
     private boolean validateCallbackTypes;
     private boolean classOnly;
-    private Class superclass;
+    private Class superclass; // 代理对象需要继承的父类
     private Class[] argumentTypes;
     private Object[] arguments;
     private boolean useFactory = true;
@@ -560,9 +565,16 @@ public class Enhancer extends AbstractClassGenerator
         CollectionUtils.filter(methods, new RejectModifierPredicate(Constants.ACC_FINAL));
     }
 
+    /**
+     * 主要过程是获取代理类的所有方法 和 代理类所实现接口的所有方法 用字节码将 所有的方法写到一个代理的类中,
+     * @param v
+     * @throws Exception
+     */
     public void generateClass(ClassVisitor v) throws Exception {
+        // superclass 是要代理的类，所以需要对它进行判空
         Class sc = (superclass == null) ? Object.class : superclass;
 
+        // 如果 被代理的类是final修饰的，则抛出异常
         if (TypeUtils.isFinal(sc.getModifiers()))
             throw new IllegalArgumentException("Cannot subclass final class " + sc.getName());
         List constructors = new ArrayList(Arrays.asList(sc.getDeclaredConstructors()));
@@ -591,6 +603,7 @@ public class Enhancer extends AbstractClassGenerator
             }
         });
 
+        // 以下是asm操作字节码
         ClassEmitter e = new ClassEmitter(v);
         if (currentData == null) {
         e.begin_class(Constants.V1_8,

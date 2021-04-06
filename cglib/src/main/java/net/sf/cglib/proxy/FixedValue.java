@@ -23,6 +23,8 @@ package net.sf.cglib.proxy;
  * the proxied method. This makes this callback primarily useful
  * for forcing a particular method (through the use of a {@link CallbackFilter}
  * to return a fixed value with little overhead.
+ *
+ * @apiNote FixedValue用来对所有拦截的方法返回相同的值
  */
 public interface FixedValue extends Callback {
     /**

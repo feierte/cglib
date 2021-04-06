@@ -23,6 +23,9 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Type;
 /**
  * @author Chris Nokleberg
+ *
+ * @apiNote ImmutableBean允许创建一个原来对象的包装类，这个包装类是不可变的，任何改变底层对象的包装类操作都会抛出IllegalStateException。
+ * 但是我们可以通过直接操作底层对象来改变包装类对象。
  */
 public class ImmutableBean
 {
